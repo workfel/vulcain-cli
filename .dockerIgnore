@@ -1,0 +1,8 @@
+src/
+typings/
+tests/
+.vscode
+node_modules/gulp*/
+node_modules/typescript
+node_modules/merge2
+node_modules/.bin

@@ -1,0 +1,8 @@
+node_modules/
+lib/
+.ssh
+.suo
+npm-debug.log
+.idea
+.DS_Store
+publish.sh
