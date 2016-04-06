@@ -1,6 +1,6 @@
 {
   "name": "vulcain-cli",
-  "version": "1.0.0-beta1",
+  "version": "1.0.0",
   "description": "vulcain command line",
   "main": "main.js",
   "scripts": {
@@ -39,7 +39,7 @@
   },
   "preferGlobal": true,
   "bin": {
-    "jellyfish": "lib/main.js"
+    "vulcain": "lib/main.js"
   },
   "files": [
       "lib"

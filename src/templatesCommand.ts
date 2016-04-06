@@ -32,7 +32,7 @@ export class TemplatesCommand {
 		
 		rest.get(this.options.server + "/api/v1/teams/" + this.options.team + "/templates")
 			.header('Accept', 'application/json')
-			.header('Authorization', "Basic " + this.options.user )
+			.header('Authorization', "ApiKey " + this.options.token )
 			.end( response => 
 			{
 				if( response.ok) 

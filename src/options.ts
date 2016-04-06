@@ -16,7 +16,7 @@ import {DefaultArgument, Argument, Verb, Section} from './flags'
 
 export class GlobalOptions {
     server:string;
-    user:string;
+    token:string;
     team:string;    
 }
 
@@ -34,6 +34,17 @@ export class ProjectOptions extends GlobalOptions {
 } 
 
 /**
+ * Clone project options
+ */
+export class CloneOptions extends GlobalOptions 
+{
+    @Argument({description:"Project environment."})
+    env:string;
+    @DefaultArgument({description:"Project name"})
+    project:string;  
+}
+
+/**
  * Create project options
  */
 export class CreateOptions extends ProjectOptions 
@@ -48,8 +59,10 @@ export class ProjectSectionOptions
     create:CreateOptions;    
     @Verb({description:"Add an existing project", handler:"addProject"})
     add:ProjectOptions;
-    @Verb({description:"Create a new project without registration", handler:"cloneProject"})
-    clone:CreateOptions;
+    @Verb({description:"Create a new project from template without registration", handler:"testProject"})
+    test:CreateOptions;
+    @Verb({description:"Clone an existing project", handler:"cloneProject"})
+    clone:CloneOptions;
 }
 
 /**
@@ -67,10 +80,10 @@ export class ConfigOptions extends GlobalOptions
 
 export class MainOptions 
 {
-    @Argument({name:"H", description:"Jellyfish server address"})
+    @Argument({name:"H", description:"Vulcain server address", env:"VULCAIN_SERVER"})
     server:string;
-    @Argument({name:"u", description:"User authentification like user:token"})
-    user:string;
+    @Argument({name:"token", description:"Vulcain api key", env:"VULCAIN_API_KEY"})
+    token:string;
     @Argument({name:"team", description:"Team name"})
     team:string;
     

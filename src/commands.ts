@@ -16,9 +16,10 @@
 /// <reference path="../typings/node/node.d.ts"/>
 /// <reference path="../typings/q/q.d.ts"/>
 import {Parser} from './flags'
-import {ConfigOptions, CreateOptions, ProjectOptions, MainOptions} from './options'
-import * as CC from './cloneCommand'
-import * as TC from './templatesCommand'
+import {ConfigOptions, CreateOptions, ProjectOptions, MainOptions, CloneOptions} from './options'
+import {ProjectCommand} from './projectCommand'
+import {CloneCommand} from './cloneCommand'
+import {TemplatesCommand} from './templatesCommand'
 import * as fs from 'fs'
 import * as Q from 'q'
 import * as path from 'path'
@@ -29,7 +30,7 @@ interface ICommand
 }
 
 var homedir = (process.platform === 'win32') ? process.env.APPDATA : process.env.HOME;
-var configDir = path.join(homedir, ".jellyfish");
+var configDir = path.join(homedir, ".vulcain");
 var configFilePath = path.join(configDir, "config.json");
         
 export class Commands extends Parser {
@@ -69,13 +70,10 @@ export class Commands extends Parser {
         if( !args.team) {
             args.team = config.team;
         }
-        if( !args.user && config.user) {
-            args.user = config.user;
+        if( !args.token && config.token) {
+            args.token = config.token;
         }
-        if(args.user) {
-            let parts = new Buffer(args.user, "base64").toString("ascii").split(':');
-            args.userName = parts[0];
-        }     
+ 
         return args;   
     }
     
@@ -89,8 +87,8 @@ export class Commands extends Parser {
             setting=true;
         }
         
-        if( args.user) {
-            config.user = new Buffer(args.user).toString("base64");
+        if( args.token) {
+            config.token = args.token;
             setting=true;
         }
 
@@ -129,11 +127,6 @@ export class Commands extends Parser {
             console.log("- server address : " + config.server);
         }
         
-        if( config.user) {
-            let parts = new Buffer(config.user, "base64").toString("ascii").split(':');
-            console.log("- auth           : " + parts[0]);
-        }
-
         if( config.template) {
             console.log("- template       : " + config.template);
         }
@@ -166,8 +159,6 @@ export class Commands extends Parser {
                 console.log("  - env      : %s", args.env);
             if(args.team)
                 console.log("  - team     : %s", args.team);
-            if(args.userName)
-                console.log("  - user     : %s", args.userName);
             
             Q.when(command.execute())
             .then(r =>
@@ -204,7 +195,7 @@ export class Commands extends Parser {
         this.prepareOptions(args);
     
         let ok = true;
-        ["server", "team", "user"].forEach( a=> { ok = ok && this.checkArgument(args, a);});
+        ["server", "team", "token"].forEach( a=> { ok = ok && this.checkArgument(args, a);});
         if(ok)
         {
             let re = /^[a-zA-Z][a-zA-Z0-9_\.-]*[a-zA-Z0-9]$/
@@ -217,13 +208,23 @@ export class Commands extends Parser {
         return ok;   
     }
   
-    cloneProject(args:CreateOptions) 
+    cloneProject(args:CloneOptions) 
+    {
+        if(this.prepareProjectOptions(args) && this.checkArgument(args, "env"))
+        {
+            console.log("Cloning project ");
+            let command = new CloneCommand(args);  
+            this.executeCommand(command, args);
+        }      
+    }
+    
+    testProject(args:CreateOptions) 
     {
         if(this.prepareProjectOptions(args))
         {
             args.clone = true;
-            console.log("Cloning project ");
-            let command = new CC.CloneCommand(args);  
+            console.log("Create a project from template");
+            let command = new ProjectCommand(args);  
             this.executeCommand(command, args);
         }      
     }
@@ -241,7 +242,7 @@ export class Commands extends Parser {
                 process.exit(2);
             }
             
-            let command = new CC.CloneCommand(args);  
+            let command = new ProjectCommand(args);  
             this.executeCommand(command, args);
         }      
     }
@@ -260,7 +261,7 @@ export class Commands extends Parser {
                 process.exit(2);
             }
             
-            let command = new CC.CloneCommand(args, true);  
+            let command = new ProjectCommand(args, true);  
             this.executeCommand(command, args);
         }      
     }
@@ -269,9 +270,9 @@ export class Commands extends Parser {
         let args = this.prepareOptions({});
         
         var ok = true;
-        ["server", "team", "user"].forEach( a=> { ok = ok && this.checkArgument(args, a);});
+        ["server", "team", "token"].forEach( a=> { ok = ok && this.checkArgument(args, a);});
         if(ok) {
-            let command = new TC.TemplatesCommand(args);   
+            let command = new TemplatesCommand(args);   
             this.executeCommand(command, args);
         }
     }

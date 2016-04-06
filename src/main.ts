@@ -17,5 +17,5 @@
 import {Commands} from './commands'
 import {MainOptions} from './options'
 
-let commands = new Commands("vulcain", "Vulcain command cli - version 1.0.0-beta1"); 
-commands.run(new MainOptions()); 
+let commands = new Commands("vulcain", "Vulcain command cli - version 1.0.0"); 
+commands.run(new MainOptions());
