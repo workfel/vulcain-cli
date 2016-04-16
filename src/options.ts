@@ -17,7 +17,6 @@ import {DefaultArgument, Argument, Verb, Section} from './flags'
 export class GlobalOptions {
     server:string;
     token:string;
-    team:string;    
 }
 
 export class ProjectOptions extends GlobalOptions {
@@ -31,6 +30,8 @@ export class ProjectOptions extends GlobalOptions {
     env:string;
     @Argument({description:"Add project from this folder", alias:"f", defaultValue:null})
     folder:string;  
+    @Argument({name:"team", description:"Team name", env:"VULCAIN_TEAM"})
+    team:string;
 } 
 
 /**
@@ -42,6 +43,8 @@ export class CloneOptions extends GlobalOptions
     env:string;
     @DefaultArgument({description:"Project name"})
     project:string;  
+    @Argument({name:"team", description:"Team name", env:"VULCAIN_TEAM"})
+    team:string;
 }
 
 /**
@@ -76,6 +79,8 @@ export class ConfigOptions extends GlobalOptions
     env:string;
     @Argument({description:"Add project from this folder", alias:"f", defaultValue:null})
     folder:string;  
+    @Argument({name:"team", description:"Team name", env:"VULCAIN_TEAM"})
+    team:string;
 }
 
 export class MainOptions 
@@ -84,8 +89,6 @@ export class MainOptions
     server:string;
     @Argument({name:"token", description:"Vulcain api key", env:"VULCAIN_API_KEY"})
     token:string;
-    @Argument({name:"team", description:"Team name"})
-    team:string;
     
     @Section({description:"Manage project"})
     project:ProjectSectionOptions;    

@@ -5,7 +5,7 @@
         "declaration": false,
 		"module": "commonjs",
         "moduleResolution" : "node",
-        "sourceMap": false,
+        "sourceMap": true,
 		"target" : "es5",
         "watch":false
 	},

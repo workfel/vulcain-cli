@@ -27,6 +27,8 @@ export class ProjectCommand
 	private meta;
 	private requestData;
 	private engine:e.Engine;
+    private addExistingProject: boolean;
+    private doNotRemoveFolder = false;
     
 	constructor(private options, addExistingProject?:boolean) 
 	{		
@@ -41,6 +43,7 @@ export class ProjectCommand
             addExistingProject:!!addExistingProject,
             team: this.options.team
         };
+        this.addExistingProject = this.requestData.addExistingProject;
 	}
 	
 	execute() : Q.Promise<boolean> 
@@ -122,6 +125,7 @@ export class ProjectCommand
                         console.log();
                         console.log("*** Creating project " + self.meta.project.fullName);
                         
+                        this.doNotRemoveFolder = false;
                         self.clone(info.template, self.options.folder, self.requestData.addExistingProject)
                             .then(dir=> self.initRepository(dir))
                             .then(dir=> self.commit( dir, info ))
@@ -134,11 +138,8 @@ export class ProjectCommand
                             {
                                 console.log("*** " + e);
                                 try {
-                                    if(!self.options.folder)
-                                        self.deleteFolderRecursive(self.meta.baseDir, true);
-                                    else {
-                                        
-                                    }
+                                    if(!this.addExistingProject && !this.doNotRemoveFolder)
+                                        self.deleteFolderRecursive(self.meta.baseDir, true);                            
                                 }
                                 catch(ex) {
                                     console.log("*** " + ex);
@@ -149,7 +150,7 @@ export class ProjectCommand
                     }
                     
                     console.log();
-                    console.log("*** Cannot create project with the specified arguments. Error : " + (response.body && response.body.message || response.body || response.statusMessage || response.error ));
+                    console.log("*** Cannot create project with the specified arguments. " + (response.body && response.body.message || response.body || response.statusMessage || response.error ));
                     if( response.body && response.body.errors) {
                         response.body.errors.forEach(err => {
                             console.log(err.message); 
@@ -214,10 +215,11 @@ export class ProjectCommand
 			{
                 console.log();
                 console.log("*** Project registered with success.")
+                this.doNotRemoveFolder = true;
                 defer.resolve(true);
 				return;
 			}
-			defer.reject("Unable to register project - Error : " + ((response.body && response.body.message) || response.body || response.statusMessage));
+			defer.reject("Unable to register project - " + ((response.body && response.body.message) || response.body || response.statusMessage));
 		});
 		return defer.promise;
 	}
@@ -317,14 +319,15 @@ export class ProjectCommand
                         defer.reject(err);
                         return;
                     }	
-                    repo.remote_push("origin", "master", err=>
+                    /*repo.remote_push("origin", "master", err=>
                     {
                         if(err) {
                             defer.reject(err);
                             return;
                         }	
                         defer.resolve(local);
-                    });
+                    });*/
+                    defer.resolve(local);
                 });
             });
         });

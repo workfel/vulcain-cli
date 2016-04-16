@@ -7,7 +7,7 @@
 			"request": "launch",
 			"program": "${workspaceRoot}/src/main.ts",
 			"stopOnEntry": false,
-			"args": ["project", "create", "test"],
+			"args": ["templates"],
 			"cwd": "${workspaceRoot}",
 			"runtimeExecutable": null,
 			"runtimeArgs": [

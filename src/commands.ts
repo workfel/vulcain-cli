@@ -210,7 +210,7 @@ export class Commands extends Parser {
   
     cloneProject(args:CloneOptions) 
     {
-        if(this.prepareProjectOptions(args) && this.checkArgument(args, "env"))
+        if(this.prepareProjectOptions(args) )
         {
             console.log("Cloning project ");
             let command = new CloneCommand(args);  
@@ -231,7 +231,7 @@ export class Commands extends Parser {
       
     createProject(args:CreateOptions) 
     {
-        if(this.prepareProjectOptions(args) && this.checkArgument(args, "env"))
+        if(this.prepareProjectOptions(args) )
         {
             if( args.template) {
                 console.log("Creating project from template :")
@@ -249,7 +249,7 @@ export class Commands extends Parser {
     
     addProject(args:ProjectOptions)
     {
-        if(this.prepareProjectOptions(args) && this.checkArgument(args, "env") )
+        if(this.prepareProjectOptions(args)  )
         {
             if( args.folder) 
             {
@@ -270,7 +270,7 @@ export class Commands extends Parser {
         let args = this.prepareOptions({});
         
         var ok = true;
-        ["server", "team", "token"].forEach( a=> { ok = ok && this.checkArgument(args, a);});
+        ["server", "token"].forEach( a=> { ok = ok && this.checkArgument(args, a);});
         if(ok) {
             let command = new TemplatesCommand(args);   
             this.executeCommand(command, args);

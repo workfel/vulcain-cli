@@ -41,7 +41,7 @@ gulp.task("compile-ts", function ()
                 .pipe(chmod(755))
                 .pipe(mainFilter.restore)
                 //       .pipe(concat('index.js'))
-                //.pipe(sourcemaps.write('.', {includeContent:false, sourceRoot: rootDir}))
+                .pipe(sourcemaps.write('.', {includeContent:false, sourceRoot: rootDir}))
                 .pipe(gulp.dest('lib'))
         ]
     );

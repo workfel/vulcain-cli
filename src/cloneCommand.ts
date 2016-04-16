@@ -119,7 +119,7 @@ export class CloneCommand
                     }
                     
                     console.log();
-                    console.log("*** Cannot clone project with the specified arguments. Error : " + (response.body && response.body.message || response.body || response.statusMessage || response.error ));
+                    console.log("*** Cannot clone project with the specified arguments. " + (response.body && response.body.message || response.body || response.statusMessage || response.error ));
                     if( response.body && response.body.errors) {
                         response.body.errors.forEach(err => {
                             console.log(err.message); 

@@ -30,14 +30,14 @@ export class TemplatesCommand {
 		console.log("Getting available templates");
 		console.log("");
 		
-		rest.get(this.options.server + "/api/v1/teams/" + this.options.team + "/templates")
+		rest.get(this.options.server + "/api/v1/templates")
 			.header('Accept', 'application/json')
 			.header('Authorization', "ApiKey " + this.options.token )
 			.end( response => 
 			{
 				if( response.ok) 
 				{
-					var templates = response.body;
+					var templates = (response.body && response.body.data) || [];
 					var cx = 0;
 					var table = new Table();
 
