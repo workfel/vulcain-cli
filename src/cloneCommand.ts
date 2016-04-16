@@ -24,11 +24,12 @@ var git = require('gift')
 
 export class CloneCommand 
 {
-	private meta;
 	private requestData;
+    private meta;
     
 	constructor(private options) 
 	{		
+        this.meta = {name: this.options.project};
 		this.requestData =  
         {
             name:this.options.project, 
@@ -97,18 +98,22 @@ export class CloneCommand
                         
                         self.clone(info.projectUrl, self.options.folder)
                             .then(_ => {
-                                 console.log("Project cloned in " + this.meta.baseDir);
+                                 try {
+                                    let engine = new e.Engine(self.meta);
+                                    engine.execScripts("clone");
+                                 }
+                                 catch(err) {
+                                    // Not critical
+                                    console.log("*** Error when running scripts : " + err);
+                                 }
+                                 console.log("Project cloned in " + self.meta.baseDir);
                                  defer.resolve(true);
                             })
                             .catch(e => 
                             {
                                 console.log("*** " + e);
                                 try {
-                                    if(!self.options.folder)
-                                        self.deleteFolderRecursive(self.meta.baseDir, true);
-                                    else {
-                                        
-                                    }
+                                    self.deleteFolderRecursive(self.meta.baseDir, true);
                                 }
                                 catch(ex) {
                                     console.log("*** " + ex);
@@ -190,7 +195,7 @@ export class CloneCommand
 	{
 		var defer = Q.defer<string>();
 
-		let local = Path.join(this.options.folder, this.meta.project.name);
+		let local = this.meta.baseDir = Path.join(this.options.folder, this.meta.name);
         console.log();
 		console.log("*** Cloning repository into " + local + "...");
         git.clone( 

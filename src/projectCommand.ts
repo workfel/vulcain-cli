@@ -132,6 +132,7 @@ export class ProjectCommand
                             .then(dir=> self.gitCommit(info.projectUrl))
                             .then(_ => {
                                  console.log("Project created in " + this.meta.baseDir);
+                                 this.engine.displayMessage("end");
                                  defer.resolve(true);
                             })
                             .catch(e => 
@@ -253,6 +254,7 @@ export class ProjectCommand
 		var defer = Q.defer<string>();		 
 		this.meta.baseDir = local;
 	    this.engine = new e.Engine(this.meta);
+        this.engine.displayMessage("start");
 		this.deleteFolderRecursive( Path.join(local, ".git"), false);
 				
 		git.init(local, (err,repo) => 

@@ -145,11 +145,14 @@ export function Verb(options:VerbOptions) {
 
 export class Parser {
 	
-	constructor(private name:string, private description:string) {
+	constructor(public name:string, public description:string) {
 	}
 
     run(options) : number
     {
+        console.log(this.description);
+        console.log("");
+        
         let result;
         if(options && options.$section) 
         {
@@ -406,7 +409,6 @@ export class Parser {
         console.log(`Usage: ${this.name}${root.arguments.length > 0 ? " [OPTIONS]":""} COMMAND ${sections && sections.length>0?"[args...]":""}`)
         console.log(`       ${this.name} [--help]`);
         console.log("");        
-        console.log(this.description);
 
         this.showOptions(root);
         this.showCommands(root);

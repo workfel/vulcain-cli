@@ -96,6 +96,9 @@ export class MainOptions
     @Verb({description:"List availabled templates.", handler:"listTemplates"})
     templates:string
     
+    @Verb({description:"Initialize developement environment for a team.", handler:"initContext"})
+    init:string
+    
     @Verb({description:"Configure global arguments.", handler:"config"})
     config:ConfigOptions;    
 }

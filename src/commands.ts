@@ -20,6 +20,7 @@ import {ConfigOptions, CreateOptions, ProjectOptions, MainOptions, CloneOptions}
 import {ProjectCommand} from './projectCommand'
 import {CloneCommand} from './cloneCommand'
 import {TemplatesCommand} from './templatesCommand'
+import {InitCommand} from './initCommand'
 import * as fs from 'fs'
 import * as Q from 'q'
 import * as path from 'path'
@@ -126,7 +127,11 @@ export class Commands extends Parser {
         if( config.server) {
             console.log("- server address : " + config.server);
         }
-        
+
+        if( config.token) {
+            console.log(`- token          : ${config.token.substr(0,5)}...`);
+        }
+                
         if( config.template) {
             console.log("- template       : " + config.template);
         }
@@ -159,7 +164,10 @@ export class Commands extends Parser {
                 console.log("  - env      : %s", args.env);
             if(args.team)
                 console.log("  - team     : %s", args.team);
-            
+            if( args.token) {
+                console.log(`  - token    : ${args.token.substr(0,5)}...`);
+            }
+                    
             Q.when(command.execute())
             .then(r =>
             {
@@ -273,6 +281,17 @@ export class Commands extends Parser {
         ["server", "token"].forEach( a=> { ok = ok && this.checkArgument(args, a);});
         if(ok) {
             let command = new TemplatesCommand(args);   
+            this.executeCommand(command, args);
+        }
+    }
+    
+    initContext() {
+        let args = this.prepareOptions({});
+        
+        var ok = true;
+        ["server", "token", "team"].forEach( a=> { ok = ok && this.checkArgument(args, a);});
+        if(ok) {
+            let command = new InitCommand(args);   
             this.executeCommand(command, args);
         }
     }

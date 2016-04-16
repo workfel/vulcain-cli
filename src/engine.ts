@@ -23,24 +23,32 @@ const child_process = require("child_process");
 
 export class Engine {
 	private manifestPath:string;
+    private manifest: any;
     
-	constructor(public meta) {
-        this.manifestPath = path.join(this.meta.baseDir, "template.manifest");
+	constructor(public meta:any) {
+        if(meta.baseDir)
+            this.manifestPath = path.join(this.meta.baseDir, "template.manifest");
+        else
+            this.manifest = meta;
     }
 	
     readManifest() 
     {
-      	if( fs.existsSync(this.manifestPath)) 
-		{
-			try 
-			{  
-                return JSON.parse(<string><any>fs.readFileSync(this.manifestPath, "utf8"));
-            }		
-			catch(e) 
-			{
-				throw new Error("Error when reading template.manifest " + e);
-			}
+        if(!this.manifest) {
+            if( fs.existsSync(this.manifestPath)) 
+            {
+                try 
+                {  
+                    this.manifest = JSON.parse(<string><any>fs.readFileSync(this.manifestPath, "utf8"));
+                }		
+                catch(e) 
+                {
+                    this.manifest = {};
+                    throw new Error("Error when reading template.manifest " + e);
+                }
+            }
         }
+        return this.manifest;
     }
     
 	transform() 
@@ -70,18 +78,39 @@ export class Engine {
         }
     }
     
-    execScripts(step:string="install", removeManifest=true) 
+    displayMessage(step:string) 
     {
         let manifest = this.readManifest();
-        if( manifest && manifest.scripts && manifest.scripts[step]) 
+        if( manifest && manifest.messages) 
         {
-            this.exec(manifest.scripts[step]);
-        }
-        
-        if( removeManifest && fs.existsSync(this.manifestPath))
-            fs.unlinkSync(this.manifestPath);			
+            let messages:Array<string> =  manifest.messages[step];
+            if(messages) {
+                console.log("");
+                messages.forEach( (msg: string) => console.log("INFO : " + msg));
+                console.log("");
+            }
+        }        
+	}
+    
+    execScripts(step:string="install") 
+    {
+        let manifest = this.readManifest();
+        if( manifest && manifest.scripts) 
+        {
+            let platform = os.platform() === "win32" ? "win32" : "*nix";             
+            let commands:Array<string> =  manifest.scripts[platform] || manifest.scripts.all;
+            commands && commands.forEach( (cmd: string) => this.exec(cmd));
+        }        
 	}
 	
+    private exec(command:string) 
+	{		
+        if(command) {
+            console.log("*** Running : " + command);
+            child_process.execSync(command, {cwd:this.meta.baseDir});
+	    }
+    }
+    	
 	private resolveProperty(name:string) 
 	{
 		name = name.substr(1, name.length-2); // remove {..}
@@ -128,16 +157,6 @@ export class Engine {
 			fs.chmodSync(file, mode)
 		}
 	}
-	
-    private exec(item) 
-	{		
-        let platform = os.platform() === "win32" ? "win32" : "*nix"; 
-        let command = (item[platform] && item[platform].command) || (item.all && item.all.command);
-        if(command) {
-            console.log("*** Running script : " + command);
-            child_process.execSync(command, {cwd:this.meta.baseDir});
-	    }
-    }
     
 	private replace(filter:string, data) 
 	{
