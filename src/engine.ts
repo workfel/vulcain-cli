@@ -98,7 +98,8 @@ export class Engine {
         if( manifest && manifest.scripts) 
         {
             let platform = os.platform() === "win32" ? "win32" : "*nix";             
-            let commands:Array<string> =  manifest.scripts[platform] || manifest.scripts.all;
+            let scripts =  manifest.scripts[platform] || manifest.scripts.all;
+            let commands:Array<string> = scripts && scripts[step];
             commands && commands.forEach( (cmd: string) => this.exec(cmd));
         }        
 	}

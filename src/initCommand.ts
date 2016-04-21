@@ -46,7 +46,7 @@ export class InitCommand {
                         if(manifest.preCommands) {
                             let commands = manifest.preCommands.split('\n').replace(/[\r\n]/g, "").trim();
                             console.log("Running pre-commands : ");
-                            let engine = new e.Engine({scripts: {"$context" : commands}});
+                            let engine = new e.Engine({scripts: {all: {"$context" : commands}}});
                             try {
                                 engine.execScripts("$context");                        
                             }
@@ -69,7 +69,7 @@ export class InitCommand {
                         if(manifest.postCommands) {
                             let commands = manifest.postCommands.split('\n').replace(/[\r\n]/g, "").trim();
                             console.log("Running post-commands : ");
-                            let engine = new e.Engine({scripts: {"$context" : commands}});
+                            let engine = new e.Engine({scripts: {all: {"$context" : commands}}});
                             try {
                                 engine.execScripts("$context");                        
                             }
