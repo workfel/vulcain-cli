@@ -96,7 +96,7 @@ export class CloneCommand
                             return;
                         }                 
                         
-                        self.clone(info.projectUrl, self.options.folder)
+                        self.clone(info.userProjectUrl, self.options.folder)
                             .then(_ => {
                                  try {
                                     let engine = new e.Engine(self.meta);

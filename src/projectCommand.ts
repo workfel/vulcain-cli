@@ -21,6 +21,7 @@ import Q = require('q')
 var exec = require('child_process').exec;
 var rest = require('unirest')
 var git = require('gift')
+var util = require('util');
 
 export class ProjectCommand 
 {
@@ -37,11 +38,12 @@ export class ProjectCommand
 		this.requestData =  
         {
             name:this.options.project, 
-            template:this.options.template, 
-            description:this.options.description || "Created by " + this.options.userName + " at " + new Date().toUTCString() + "(UTC)",
+            template:this.options.template,
+            description:this.options.description,
             env:this.options.env,
             addExistingProject:!!addExistingProject,
-            team: this.options.team
+            team: this.options.team,
+            isPackage: this.options.package
         };
         this.addExistingProject = this.requestData.addExistingProject;
 	}
@@ -106,7 +108,10 @@ export class ProjectCommand
                             }
                             else {
                                 env = env.replace(/["']/g, "").trim();
-                                self.options.folder = Path.join(env, info.team);
+                                if (this.options.clone)
+                                    self.options.folder = Path.join(env, "_tests");
+                                else
+                                    self.options.folder = Path.join(env, info.team);
                             }
                         }
                         else if( self.options.folder === ".") {
@@ -129,7 +134,7 @@ export class ProjectCommand
                         self.clone(info.template, self.options.folder, self.requestData.addExistingProject)
                             .then(dir=> self.initRepository(dir))
                             .then(dir=> self.commit( dir, info ))
-                            .then(dir=> self.gitCommit(info.projectUrl))
+                            .then(dir=> self.gitCommit(info.userProjectUrl))
                             .then(_ => {
                                  console.log("Project created in " + this.meta.baseDir);
                                  this.engine.displayMessage("end");
@@ -204,7 +209,7 @@ export class ProjectCommand
 		
         console.log();
 		console.log("*** Registering project in vulcain...");
-		var request = rest.post(this.options.server + "/api/v1/register/commit")
+        var request = rest.post(this.options.server + "/api/v1/register/commit")
 					.header('Accept', 'application/json')
 					.header('Authorization', "ApiKey " + this.options.token )
 					.type("json")
@@ -212,15 +217,16 @@ export class ProjectCommand
 
 		request.end( response => 
 		{
-			if(response.ok) 
+			if(response.ok)
 			{
                 console.log();
                 console.log("*** Project registered with success.")
                 this.doNotRemoveFolder = true;
                 defer.resolve(true);
 				return;
-			}
-			defer.reject("Unable to register project - " + ((response.body && response.body.message) || response.body || response.statusMessage));
+            }
+            
+			defer.reject( util.format( "Unable to register project - %j", ((response.body && response.body.message) || response.body || response.statusMessage)));
 		});
 		return defer.promise;
 	}

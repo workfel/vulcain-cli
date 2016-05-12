@@ -7,10 +7,10 @@
     ],
     "tasks": [
         {
-        "taskName": "watch-ts",
+        "taskName": "compile-ts",
         "isBuildCommand": true,
         "problemMatcher":"$tsc",
-        "isWatching": true 
+        "isWatching": false 
         }
     ]
 }

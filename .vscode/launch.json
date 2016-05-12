@@ -5,9 +5,10 @@
 			"name": "Launch",
 			"type": "node",
 			"request": "launch",
+			"preLaunchTask": "compile-ts",
 			"program": "${workspaceRoot}/src/main.ts",
 			"stopOnEntry": false,
-			"args": ["init"],
+			"args": ["project", "test", "test-oauth", "-t", "NodeEmptyApplication"],
 			"cwd": "${workspaceRoot}",
 			"runtimeExecutable": null,
 			"runtimeArgs": [
@@ -18,7 +19,8 @@
 			},
 			"externalConsole": false,
 			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/lib"
+			"outDir": "${workspaceRoot}/lib",
+			"smartStep": true
 		},
 		{
 			"name": "Attach",

@@ -20,7 +20,7 @@ export class GlobalOptions {
 }
 
 export class ProjectOptions extends GlobalOptions {
-    @Argument({description:"Clone a template (Doesn't register the project)"})
+  //  @Argument({description:"Clone a template (Doesn't register the project)"})
     clone:boolean;
     @DefaultArgument({description:"Project name"})
     project:string;
@@ -44,7 +44,7 @@ export class CloneOptions extends GlobalOptions
     @DefaultArgument({description:"Project name"})
     project:string;  
     @Argument({name:"team", description:"Team name", env:"VULCAIN_TEAM"})
-    team:string;
+    team: string;
 }
 
 /**
@@ -53,7 +53,9 @@ export class CloneOptions extends GlobalOptions
 export class CreateOptions extends ProjectOptions 
 {
     @Argument({description:"Template used to create a new project", "alias":"t"})
-    template:string;    
+    template: string;    
+    @Argument({description:"This project is a package (library)", defaultValue: false})
+    package: boolean;
 }
 
 export class ProjectSectionOptions 
