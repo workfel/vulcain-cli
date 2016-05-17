@@ -1,5 +1,4 @@
 node_modules/
-lib/
 .ssh
 .suo
 npm-debug.log
