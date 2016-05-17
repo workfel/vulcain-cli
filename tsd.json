@@ -5,17 +5,11 @@
   "path": "typings",
   "bundle": "typings/tsd.d.ts",
   "installed": {
-    "rx/rx-lite.d.ts": {
-      "commit": "8886ae591751e8a8237fa855617745768f0b1bdf"
-    },
-    "inquirer/inquirer.d.ts": {
-      "commit": "8886ae591751e8a8237fa855617745768f0b1bdf"
-    },
-    "through/through.d.ts": {
-      "commit": "8886ae591751e8a8237fa855617745768f0b1bdf"
-    },
     "node/node.d.ts": {
-      "commit": "8886ae591751e8a8237fa855617745768f0b1bdf"
+      "commit": "398bd742115e2b071ab3edf8b543b6df6fa62dc2"
+    },
+    "promise/promise.d.ts": {
+      "commit": "398bd742115e2b071ab3edf8b543b6df6fa62dc2"
     }
   }
 }
