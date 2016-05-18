@@ -19,17 +19,19 @@ import {ProjectAddCommand} from './commands/projectAddCommand'
 import {ProjectTestCommand} from './commands/projectTestCommand'
 import {ConfigCommand} from './commands/configCommand'
 import {InitCommand} from './commands/initCommand'
+import {TemplateAddCommand} from './commands/templateAddCommand'
 var vorpal = require('vorpal')();
 
 vorpal
     .delimiter("vulcain > ");
 
 console.log()
-console.log("Vulcain command - Version: 1.0.10");
+console.log("Vulcain command - Version: 1.0.13");
 console.log("=================================")
 console.log();
 console.log("Commands : ");
 
+//new TemplateAddCommand(vorpal);
 new ProjectCreateCommand(vorpal);
 new ProjectCloneCommand(vorpal);
 new ProjectAddCommand(vorpal);

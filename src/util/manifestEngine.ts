@@ -12,7 +12,6 @@
 //
 //    Copyright (c) Zenasoft
 //
-
 const glob = require('glob')
 const ejs = require('ejs')
 const os = require('os')
@@ -24,11 +23,14 @@ export class Engine {
 	private manifestPath:string;
     private manifest: any;
     
-	constructor(public meta:any) {
-        if(meta.baseDir)
-            this.manifestPath = path.join(this.meta.baseDir, "template.manifest");
-        else
-            this.manifest = meta;
+	constructor(private vorpal, public meta?:any) {
+        this.manifest = meta;
+        this.meta = meta || {project:{}};
+    }
+
+    setBaseDir(folder: string) {
+        this.meta.baseDir = folder;
+        this.manifestPath = path.join(this.meta.baseDir, "template.manifest");
     }
 
     updateMeta(info) {
@@ -52,7 +54,7 @@ export class Engine {
                 catch(e) 
                 {
                     this.manifest = {};
-                    throw new Error("Error when reading template.manifest " + e);
+                    throw new Error("*** Error when reading template.manifest " + e);
                 }
             }
         }
@@ -100,24 +102,34 @@ export class Engine {
         }        
 	}
     
-    execScripts(step:string="install") 
+    async execScriptsAsync(step?:string) 
     {
+        step = step || "install";
         let manifest = this.readManifest();
         if( manifest && manifest.scripts) 
         {
             let platform = os.platform() === "win32" ? "win32" : "*nix";             
             let scripts =  manifest.scripts[platform] || manifest.scripts.all;
-            let commands:Array<string> = scripts && scripts[step];
-            commands && commands.forEach( (cmd: string) => this.exec(cmd));
+            let commands: Array<string> = scripts && scripts[step];
+            if (commands) {
+                for (let cmd of commands) {
+                    if (cmd)
+                        await this.execAsync(cmd);    
+                }
+            }
+           // commands && commands.forEach( (cmd: string) => this.exec(cmd));
         }        
 	}
 	
-    private exec(command:string) 
-	{		
-        if(command) {
+    private execAsync(command: string) {
+        return new Promise((resolve, reject) => {
             console.log("*** Running : " + command);
-            child_process.execSync(command, {cwd:this.meta.baseDir});
-	    }
+            let ps = child_process.exec(command, { cwd: this.meta.baseDir });
+            ps.stdout.on("data", data => this.vorpal.log(data));
+            ps.stderr.on("data", data => this.vorpal.log(data));
+            ps.on('exit', code => resolve(code));
+            this.vorpal.log();
+        });
     }
     	
 	private resolveProperty(name:string) 

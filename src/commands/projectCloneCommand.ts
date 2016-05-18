@@ -12,9 +12,10 @@ export class ProjectCloneCommand extends AbstractCommand {
         vorpal.command('clone <name>', desc)
             .autocomplete({data: this.serviceAutoCompletion.bind(this)})
             .validate(args => {
-                if (!/^(([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])\\.)*([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])$/.test(args.name))
+                if (!/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/.test(args.name))
                     return "Invalid character for project name. Use only lowercase, number, '.' or '-'"
             })
+            .option("--folder, -f <folder>", "Project folder")            
             .action(function (args, cb) {
                 self.exec(this, args, cb);
             });
@@ -48,8 +49,14 @@ export class ProjectCloneCommand extends AbstractCommand {
             ]).then(answers => {
                 options.userName = answers.userName;
                 options.password = answers.password;
-                var executor = new CreateProjectExecutor(this.vorpal, options, Action.Clone);
-                executor.executeAsync().then(done);
+                try {
+                    var executor = new CreateProjectExecutor(this.vorpal, options, Action.Clone);
+                    executor.executeAsync().then(done);
+                }
+                catch (e) {
+                    vorpal.log(e);
+                    done();
+                }
             });
         }
         else

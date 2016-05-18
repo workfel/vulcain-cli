@@ -73,7 +73,8 @@ export abstract class AbstractCommand {
         let config = this.readOptions();
 
         args.baseDir = process.cwd();
-
+        args.defaultFolder = config.defaultFolder;
+        
         // Merge config
         if (!args.server) {
             args.server = config.server;

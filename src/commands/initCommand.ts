@@ -36,7 +36,6 @@ export class InitCommand extends AbstractCommand
     }
     
     private exec(vorpal, args, done) {
-        return new Promise((resolve, reject) => {
             let options = this.prepareOptions(args.options)
             if (options) {
                 vorpal.log("Initialize developpement context for team " + options.team);
@@ -54,7 +53,7 @@ export class InitCommand extends AbstractCommand
                             if (manifest.preCommands) {
                                 let commands = manifest.preCommands.split('\n').replace(/[\r\n]/g, "").trim();
                                 vorpal.log("Running pre-commands : ");
-                                let engine = new Engine({ scripts: { all: { "$context": commands } } });
+                                let engine = new Engine(vorpal, { scripts: { all: { "$context": commands } } });
                                 try {
                                     engine.execScripts("$context");
                                 }
@@ -69,7 +68,7 @@ export class InitCommand extends AbstractCommand
                                     this.execFromString(code);
                                 }
                                 catch (e) {
-                                    throw "Error in javascript code : " + e;
+                                    vorpal.log( "Error in javascript code : " + e);
                                 }
                             }
                             if (manifest.postCommands) {
@@ -88,10 +87,9 @@ export class InitCommand extends AbstractCommand
                     else {
                         vorpal.log("Server error : " + (((response.body && response.body.message) || response.body) || response.statusMessage || response.error))
                     }
-                    resolve(response.ok);
+                    done();
                 });
             }
-        });
     }
 
     execFromString(code) {

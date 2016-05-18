@@ -3,6 +3,7 @@ import {CreateProjectExecutor, Action} from '../util/projectCreateExecutor'
 var Promise = require('promise');
 
 export class ProjectAddCommand extends AbstractCommand {
+
     constructor(vorpal) {
         super(vorpal);
 
@@ -17,6 +18,7 @@ export class ProjectAddCommand extends AbstractCommand {
             })
             .option("--desc <description>", "Project description")
             .option("-p, --package", "Create as a package (library)")
+            .option("--folder, -f <folder>", "Project folder")
             .action(function (args, cb) {
                 self.exec(this, args, cb);
             });
@@ -27,17 +29,21 @@ export class ProjectAddCommand extends AbstractCommand {
             errors.push("No team are setting in current context. Use config --team option.")
         }
     }
-    
+
     private exec(vorpal, args, done) {
         let options = this.prepareOptions(args.options)
         if (options) {
             options.project = args.name;
             this.vorpal.log();
             this.vorpal.log("Adding project : " + options.project);
-
-            var executor = new CreateProjectExecutor(this.vorpal, options, Action.AddExistingProject);
-            executor.executeAsync().then(done);
-            return;
+            try {
+                var executor = new CreateProjectExecutor(this.vorpal, options, Action.AddExistingProject);
+                executor.executeAsync().then(done);
+                return;
+            }
+            catch (e) {
+                vorpal.log(e);
+            }
         }
         done();
     }

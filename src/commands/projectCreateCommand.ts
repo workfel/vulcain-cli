@@ -12,10 +12,11 @@ export class ProjectCreateCommand extends AbstractCommand {
         let self = this;
         vorpal.command('create <name>', desc)
             .validate(args => {
-                if (!/^(([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])\\.)*([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])$/.test(args.name))
+                if (!/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/.test(args.name))
                     return "Invalid character for project name. Use only lowercase, number, '.' or '-'"
             })
             .option("--desc <description>", "Project description")
+            .option("--folder, -f <folder>", "Project folder")
             .option("-p, --package", "Create as a package (library)")
             .option("-t, --template <template>", "Template name used to initialize project", this.templateAutoCompletion.bind(this))
             .action(function (args, cb) {
@@ -47,10 +48,14 @@ export class ProjectCreateCommand extends AbstractCommand {
             options.project = args.name;
             this.vorpal.log();
             this.vorpal.log("Creating new project : " + options.project);
-
-            var executor = new CreateProjectExecutor(this.vorpal, options, Action.Create);
-            executor.executeAsync().then(done);
-            return;
+            try {
+                var executor = new CreateProjectExecutor(this.vorpal, options, Action.Create);
+                executor.executeAsync().then(done);
+                return;
+            }
+            catch (e) {
+                vorpal.log(e);
+            }
         }
         done();
     }

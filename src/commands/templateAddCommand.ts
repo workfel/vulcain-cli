@@ -2,21 +2,22 @@ import {AbstractCommand} from './abstractCommand'
 import {CreateProjectExecutor, Action} from '../util/projectCreateExecutor'
 var Promise = require('promise');
 
-export class ProjectTestCommand extends AbstractCommand {
+export class TemplateAddCommand extends AbstractCommand {
+
     constructor(vorpal) {
         super(vorpal);
 
-        let desc = "test    : Create locally a new project from template. (Don't register it in vulcain))";
+        let desc = "template add    : Add local project to vulcain.";
         console.log("  - " + desc);
 
         let self = this;
-        vorpal.command('test <name>', desc)
+        vorpal.command('template clone <name>', desc)
             .validate(args => {
                 if (!/^(([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])\\.)*([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])$/.test(args.name))
                     return "Invalid character for project name. Use only lowercase, number, '.' or '-'"
             })
-            .option("-t, --template <template>", "Template name used to initialize project", this.templateAutoCompletion.bind(this))
-            .option("--folder, -f <folder>", "Projects folder")
+            .option("--desc <description>", "Project description")
+            .option("--folder, -f <folder>", "Project folder")
             .action(function (args, cb) {
                 self.exec(this, args, cb);
             });
@@ -30,11 +31,8 @@ export class ProjectTestCommand extends AbstractCommand {
             callback(templates.map(t => t.name));
         });
     }
-
+    
     protected checkArguments(args, errors) {
-        if (!args.template) {
-            errors.push("You must provide a template. Use --template (or -t) option.")
-        }
     }
 
     private exec(vorpal, args, done) {
@@ -42,9 +40,9 @@ export class ProjectTestCommand extends AbstractCommand {
         if (options) {
             options.project = args.name;
             this.vorpal.log();
-            this.vorpal.log("Creating new project : " + options.project);
+            this.vorpal.log("Adding template : " + options.project);
             try {
-                var executor = new CreateProjectExecutor(this.vorpal, options, Action.DontRegister);
+                var executor = new CreateProjectExecutor(this.vorpal, options, Action.AddExistingProject);
                 executor.executeAsync().then(done);
                 return;
             }

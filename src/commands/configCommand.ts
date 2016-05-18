@@ -13,6 +13,8 @@ export class ConfigCommand extends AbstractCommand
         vorpal.command('config', desc)
             .option("--server, -H <server>", "Vulcain server address")
             .option("--token <token>", "Vulcain token")
+            .option("--template <template>", "Default template", this.templateAutoCompletion.bind(this))
+            .option("--folder, -f <folder>", "Default projects folder")
             .option("--team <team>", "Team name", this.teamAutoCompletion.bind(this))
             .action(function (args, cb) {
                 self.exec(args.options);
@@ -22,6 +24,15 @@ export class ConfigCommand extends AbstractCommand
         this.exec({});
     }
 
+    private templateAutoCompletion(input, callback) {
+        let request = this.createRequest(["templates"], { startsWith: input });
+        if (!request) return [];
+        request.end((response) => {
+            var templates = (response.ok && response.body && response.body.data) || [];
+            callback(templates.map(t => t.name));
+        });
+    }
+    
     private teamAutoCompletion(input, callback) {
         let request = this.createRequest(["teams"], { startsWith: input });
         if (!request) return [];
@@ -54,7 +65,7 @@ export class ConfigCommand extends AbstractCommand
         }
 
         if (args.folder) {
-            config.folder = args.folder;
+            config.defaultFolder = args.folder;
             hasChanges = true;
         }
 
@@ -85,8 +96,8 @@ export class ConfigCommand extends AbstractCommand
             this.vorpal.log("  - template: " + config.template);
         }
 
-        if (config.folder) {
-            this.vorpal.log("  - folder  : " + config.folder);
+        if (config.defaultFolder) {
+            this.vorpal.log("  - folder  : " + config.defaultFolder);
         }
         else if (process.env["VULCAIN_PROJECT"]) {
             this.vorpal.log("  - folder  : " + process.env["VULCAIN_PROJECT"]);            

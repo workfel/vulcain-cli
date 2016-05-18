@@ -36,7 +36,7 @@ export class CreateProjectExecutor {
     private doNotRemoveFolder = false;
 
     constructor(private vorpal, private options, private action: Action) {
-        this.engine = new Engine({ project: {} });
+        this.engine = new Engine(vorpal);
         //		this.engine.meta.user = this.options.user && (<string>this.options.user).split(":")[0];
         this.requestData =
             {
@@ -59,7 +59,7 @@ export class CreateProjectExecutor {
     private prepareFolder(info)
     {
         if (!this.options.folder) {
-            let env = process.env["VULCAIN_PROJECT"];
+            let env = this.options.defaultFolder || process.env["VULCAIN_PROJECT"];
             if (!env) {
                 this.options.folder = process.cwd();
             }
@@ -120,14 +120,13 @@ export class CreateProjectExecutor {
     protected async runClone(info) {
         this.vorpal.log("*** Cloning project " + this.engine.meta.project.fullName);
         try {
-            var url = URL.parse(info.gitUrl);
+            var url = URL.parse(info.projectUrl);
             if(this.options.userName && this.options.password)
                 url.auth = this.options.userName + ":" + this.options.password;
             await this.clone(URL.format(url), this.options.folder)
-            await this.gitCommit(info.projectUrl);
 
             try {
-                this.engine.execScripts("clone");
+                await this.engine.execScriptsAsync("clone");
             }
             catch (err) {
                 // Not critical
@@ -160,7 +159,7 @@ export class CreateProjectExecutor {
             }
             else {
                 try {
-                    this.engine.execScripts();
+                    await this.engine.execScriptsAsync();
                 }
                 catch (err) {
                     // Not critical
@@ -239,7 +238,7 @@ export class CreateProjectExecutor {
         });
 	}
 	
-	private deleteFolderRecursive(path, first=false) 
+	private deleteFolderRecursive(path, first?:boolean) 
 	{
   		if( path && fs.existsSync(path) ) 
 		{
@@ -281,8 +280,7 @@ export class CreateProjectExecutor {
                     this.engine.transform();
                 }
                 catch (e) {
-                    reject(e)
-                    return;
+                    this.vorpal.log("*** Error when updating source files - " + e);
                 }
                 resolve(local);
             });
@@ -291,11 +289,11 @@ export class CreateProjectExecutor {
     
     private gitCommit( newRepositoryUrl:string )
     {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             let local = this.engine.meta.baseDir;
 
             try {
-                this.engine.execScripts();
+                await this.engine.execScriptsAsync();
             }
             catch (err) {
                 // Not critical
@@ -341,7 +339,7 @@ export class CreateProjectExecutor {
             if (this.action === Action.AddExistingProject) {
                 this.vorpal.log("*** Adding project from folder " + folder);
                 this.doNotRemoveFolder = true;
-                this.engine.meta.baseDir = folder;
+                this.engine.setBaseDir(folder);
                 resolve(folder);
                 return;
             }
@@ -352,7 +350,7 @@ export class CreateProjectExecutor {
                 reject("destination path " + local + " already exists");
                 return;
             }
-            this.engine.meta.baseDir = local;
+            this.engine.setBaseDir(local);
             this.vorpal.log("*** Cloning repository into " + local + "...");
             git.clone(
                 templateUrl,

@@ -1,11 +1,14 @@
 {
   "name": "vulcain-cli",
-  "version": "1.0.10",
+  "version": "1.0.13",
   "description": "vulcain command line",
   "main": "main.js",
   "scripts": {},
   "author": "Zenasoft",
   "license": "Apache-2.0",
+  "engines": {
+    "node": ">= 6.0.0"
+  },
   "devDependencies": {
     "typescript": "^1.8.0",
     "fs-extra": "^0.26.5",
