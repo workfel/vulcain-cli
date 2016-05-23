@@ -11,6 +11,7 @@ export class ConfigCommand extends AbstractCommand
         
         let self = this;
         vorpal.command('config', desc)
+            .option("--profile, -p <profile>", "Profile name (Default = default)")
             .option("--server, -H <server>", "Vulcain server address")
             .option("--token <token>", "Vulcain token")
             .option("--template <template>", "Default template", this.templateAutoCompletion.bind(this))
@@ -44,8 +45,8 @@ export class ConfigCommand extends AbstractCommand
         
     private exec(args)
     {
-        var config = this.readOptions();
-        var hasChanges = false;
+        var config = this.readOptions(args.profile);
+        var hasChanges = !!args.profile;
 
         if (args.server) {
             if( !/^https?/i.test(args.server))
@@ -80,16 +81,23 @@ export class ConfigCommand extends AbstractCommand
         }
         
         if (hasChanges) {
-            this.saveOptions(config);
+            this.saveOptions(config, args.profile);
+        }
+        else {
+            this.vorpal.log("Profile list :");
+            for (var p of this.listProfiles()) {
+                this.vorpal.log(" - " + p);
+            }
+            this.vorpal.log();
         }
         
-        this.vorpal.log("Current settings : ");
+        this.vorpal.log(`Settings for current profile '${config.profile}' : `);
         if (config.server) {
             this.vorpal.log("  - server  : " + config.server);
         }
 
         if (config.token) {
-            this.vorpal.log(`  - token   : ${config.token.substr(0, 5)}...`);
+            this.vorpal.log(`  - token   : ${config.token.substr(0, 8)}...`);
         }
 
         if (config.template) {

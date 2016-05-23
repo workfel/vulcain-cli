@@ -44,8 +44,8 @@ export class ProjectCloneCommand extends AbstractCommand {
             this.vorpal.log();
             this.vorpal.log("Cloning project : " + options.project);
             return vorpal.prompt([
-                { type: "input", name: "userName", message: "Enter a valid user name to connect to version control: " },
-                { type: "password", name:"password", message:"Enter password: "}
+                { type: "input", name: "userName", message: "Enter a valid user name to connect to your version control server (optional) : " },
+                { type: "password", name:"password", message:"Enter password : "}
             ]).then(answers => {
                 options.userName = answers.userName;
                 options.password = answers.password;

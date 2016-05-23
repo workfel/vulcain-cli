@@ -12,7 +12,7 @@
 //
 //    Copyright (c) Zenasoft
 //
-
+import * as os from 'os'
 import * as fs from 'fs'
 import * as Path from 'path'
 import * as URL from 'url'
@@ -200,7 +200,7 @@ export class CreateProjectExecutor {
     {
         let chunk = chunks.shift();
         if(!chunk) return;
-        
+        if (chunk === "~") chunk = os.homedir();
         let path = Path.join(base, chunk);
         if(!fs.existsSync(path)) {
             let err = fs.mkdirSync(path);

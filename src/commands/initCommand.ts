@@ -43,7 +43,7 @@ export class InitCommand extends AbstractCommand
                 vorpal.log("");
 
                 let request = this.createRequest(["teams", options.team, "context"], {});
-                request.end(response => {
+                request.end( async (response) => {
                     if (response.ok) {
                         let manifest = response.body;
                         if (!manifest) {
@@ -55,7 +55,7 @@ export class InitCommand extends AbstractCommand
                                 vorpal.log("Running pre-commands : ");
                                 let engine = new Engine(vorpal, { scripts: { all: { "$context": commands } } });
                                 try {
-                                    engine.execScripts("$context");
+                                    await engine.execScriptsAsync("$context");
                                 }
                                 catch (e) {
                                     vorpal.log("Error : " + e);
@@ -76,7 +76,7 @@ export class InitCommand extends AbstractCommand
                                 vorpal.log("Running post-commands : ");
                                 let engine = new Engine({ scripts: { all: { "$context": commands } } });
                                 try {
-                                    engine.execScripts("$context");
+                                    await engine.execScriptsAsync("$context");
                                 }
                                 catch (e) {
                                     vorpal.log("Error : " + e);

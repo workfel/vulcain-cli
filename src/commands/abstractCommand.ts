@@ -1,19 +1,25 @@
 import * as fs from 'fs'
+import * as os from 'os'
 import * as path from 'path'
 var Promise = require('promise');
 var rest = require('unirest')
+
+interface IConfig {
+    defaultProfile: string;
+    data: any;
+}
 
 export abstract class AbstractCommand {
 
     private configFilePath: string;
     private homedir: string;
     private configDir: string;
-    private static config;
+    private static config:IConfig;
     
     constructor(protected vorpal) {
-        this.homedir = (process.platform === 'win32') ? process.env.APPDATA : process.env.HOME;
+        this.homedir = os.homedir();
         this.configDir = path.join(this.homedir, ".vulcain");
-        this.configFilePath = path.join(this.configDir, "config.json");
+        this.configFilePath = path.join(this.configDir, "configs.json");
     }
 
     protected createRequest(paths: Array<string>, query) {
@@ -32,10 +38,10 @@ export abstract class AbstractCommand {
             .header('Authorization', "ApiKey " + options.token);
     }
     
-    protected readOptions() {
+    protected readOptions(profile?:string) {
 
         if (!AbstractCommand.config) {
-            AbstractCommand.config = {};
+            AbstractCommand.config = { defaultProfile: null, data: {}};
             if (fs.existsSync(this.configFilePath)) {
                 try {
                     AbstractCommand.config = JSON.parse(fs.readFileSync(this.configFilePath, { encoding: "utf8" }));
@@ -43,18 +49,30 @@ export abstract class AbstractCommand {
                 catch (e) { }
             }
         }
-        return AbstractCommand.config;
+        return AbstractCommand.config.data[profile || AbstractCommand.config.defaultProfile || "default"] || {};
     }
 
-    protected saveOptions(config)
+    protected listProfiles() {
+        this.readOptions();
+        var list = [];
+        for (var p in AbstractCommand.config.data) {
+            if (!AbstractCommand.config.data.hasOwnProperty(p)) continue;
+            list.push(p + (AbstractCommand.config.defaultProfile === p ? " (current)" : ""));
+        }
+        return list;
+    }   
+    
+    protected saveOptions(config, profile:string="default")
     {
         if (!fs.existsSync(this.homedir))
             fs.mkdirSync(this.homedir);
         if (!fs.existsSync(this.configDir))
             fs.mkdirSync(this.configDir);
 
-        AbstractCommand.config = config;
-        fs.writeFileSync(this.configFilePath, JSON.stringify(config), { encoding: "utf8" });
+        AbstractCommand.config.defaultProfile = profile;        
+        AbstractCommand.config.data[profile] = config;
+        config.profile = profile;
+        fs.writeFileSync(this.configFilePath, JSON.stringify(AbstractCommand.config), { encoding: "utf8" });
         console.log("Settings saved.");
     }
 
