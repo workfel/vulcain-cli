@@ -159,6 +159,14 @@ export class CreateProjectExecutor {
             }
             else {
                 try {
+                    await this.gitRemoveOrigin();
+                    this.vorpal.log("*** Processing Manifest - Updating source files...");
+                    try {
+                        this.engine.transform();
+                    }
+                    catch (e) {
+                        this.vorpal.log("*** Error when updating source files - " + e);
+                    }
                     await this.engine.execScriptsAsync();
                 }
                 catch (err) {
@@ -282,6 +290,22 @@ export class CreateProjectExecutor {
                 catch (e) {
                     this.vorpal.log("*** Error when updating source files - " + e);
                 }
+                resolve(local);
+            });
+        });
+    }
+    
+    private gitRemoveOrigin() {
+        return new Promise(async (resolve, reject) => {
+            let local = this.engine.meta.baseDir;
+            let repo = git(local); 
+            this.vorpal.log("*** Remove origin");
+            repo.remote_remove("origin", err => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
                 resolve(local);
             });
         });

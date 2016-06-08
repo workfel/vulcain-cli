@@ -26,7 +26,7 @@ gulp.task("compile-ts", function ()
         });
 
     var tsResult =
-        gulp.src('src/**', { base: 'src/' })
+        gulp.src(['src/**/*.ts', 'typings/tsd.d.ts'], { base: 'src/' })
             .pipe(sourcemaps.init())
            // .pipe(insert.prepend('"use strict";'))
             .pipe(ts(tsProject));

@@ -8,8 +8,5 @@
         "sourceMap": true,
 		"target" : "es6",
         "watch":false
-	},
-    "exclude" : [
-      "node_modules"
-    ]
+	}
 }
