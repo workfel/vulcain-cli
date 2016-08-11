@@ -46,7 +46,11 @@ export class CreateProjectExecutor {
                 env: this.options.env,
                 templateRequired: action === Action.Create || action === Action.DontRegister,
                 team: this.options.team,
-                isPackage: this.options.package
+                isPackage: this.options.package,
+                action: action === Action.Create ? "create" :
+                    action === Action.Clone ? "clone" :
+                    action === Action.AddExistingProject ? "add" :
+                    "test"        
             };
     }
 
@@ -104,6 +108,8 @@ export class CreateProjectExecutor {
 
             if (this.action === Action.Clone)
                 return await this.runClone(info);
+            else if (this.action === Action.AddExistingProject)
+                return await this.runAdd(info);
             else
                 return await this.runCreate(info);
         }
@@ -144,6 +150,17 @@ export class CreateProjectExecutor {
             catch (ex) {
                 this.vorpal.log("*** " + ex);
             }
+        }
+    }
+    
+    protected async runAdd(info) {
+        this.vorpal.log("*** adding project " + this.engine.meta.project.fullName);
+        try {
+            await this.registerService(this.options.folder, info);
+            return true;
+        }
+        catch (e) {
+            this.vorpal.log("*** " + e);
         }
     }
     

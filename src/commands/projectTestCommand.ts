@@ -16,7 +16,7 @@ export class ProjectTestCommand extends AbstractCommand {
                     return "Invalid character for project name. Use only lowercase, number, '.' or '-'"
             })
             .option("-t, --template <template>", "Template name used to initialize project", this.templateAutoCompletion.bind(this))
-            .option("--folder, -f <folder>", "Projects folder")
+            .option("--folder, -f <folder>", "Project folder", this.fileAutoComplete)
             .action(function (args, cb) {
                 self.exec(this, args, cb);
             });

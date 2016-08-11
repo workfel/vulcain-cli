@@ -16,7 +16,7 @@ export class ProjectCreateCommand extends AbstractCommand {
                     return "Invalid character for project name. Use only lowercase, number, '.' or '-'"
             })
             .option("--desc <description>", "Project description")
-            .option("--folder, -f <folder>", "Project folder")
+            .option("--folder, -f <folder>", "Project folder", this.fileAutoComplete)
             .option("-p, --package", "Create as a package (library)")
             .option("-t, --template <template>", "Template name used to initialize project", this.templateAutoCompletion.bind(this))
             .action(function (args, cb) {

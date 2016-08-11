@@ -18,7 +18,7 @@ export class ProjectAddCommand extends AbstractCommand {
             })
             .option("--desc <description>", "Project description")
             .option("-p, --package", "Create as a package (library)")
-            .option("--folder, -f <folder>", "Project folder")
+            .option("--folder, -f <folder>", "Project folder", this.fileAutoComplete)
             .action(function (args, cb) {
                 self.exec(this, args, cb);
             });

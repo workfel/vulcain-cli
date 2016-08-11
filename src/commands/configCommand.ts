@@ -15,7 +15,7 @@ export class ConfigCommand extends AbstractCommand
             .option("--server, -H <server>", "Vulcain server address")
             .option("--token <token>", "Vulcain token")
             .option("--template <template>", "Default template", this.templateAutoCompletion.bind(this))
-            .option("--folder, -f <folder>", "Default projects folder")
+            .option("--folder, -f <folder>", "Project folder", this.fileAutoComplete)
             .option("--team <team>", "Team name", this.teamAutoCompletion.bind(this))
             .action(function (args, cb) {
                 self.exec(args.options);

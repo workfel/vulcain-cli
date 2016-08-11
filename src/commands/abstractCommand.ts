@@ -3,6 +3,7 @@ import * as os from 'os'
 import * as path from 'path'
 var Promise = require('promise');
 var rest = require('unirest')
+const fsAutocomplete = require('vorpal-autocomplete-fs');
 
 interface IConfig {
     defaultProfile: string;
@@ -21,6 +22,10 @@ export abstract class AbstractCommand {
         this.configDir = path.join(this.homedir, ".vulcain");
         this.configFilePath = path.join(this.configDir, "configs.json");
     }
+
+    protected fileAutoComplete() {
+        return fsAutocomplete({ directory: true });
+    }    
 
     protected createRequest(paths: Array<string>, query) {
         var options = this.readOptions();

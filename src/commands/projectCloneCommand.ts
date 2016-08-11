@@ -15,7 +15,7 @@ export class ProjectCloneCommand extends AbstractCommand {
                 if (!/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/.test(args.name))
                     return "Invalid character for project name. Use only lowercase, number, '.' or '-'"
             })
-            .option("--folder, -f <folder>", "Project folder")            
+            .option("--folder, -f <folder>", "Project folder", this.fileAutoComplete)
             .action(function (args, cb) {
                 self.exec(this, args, cb);
             });
