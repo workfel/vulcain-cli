@@ -1,6 +1,6 @@
 {
   "name": "vulcain-cli",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "vulcain command line",
   "main": "main.js",
   "scripts": {},
