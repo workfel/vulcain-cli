@@ -24,15 +24,6 @@ export class ProjectCreateCommand extends AbstractCommand {
             });
     }
 
-    private templateAutoCompletion(input, callback) {
-        let request = this.createRequest(["templates"], { startsWith: input });
-        if (!request) return [];
-        request.end((response) => {
-            var templates = (response.ok && response.body && response.body.data) || [];
-            callback(templates.map(t => t.name));
-        });
-    }
-
     protected checkArguments(args, errors) {
         if (!args.team) {
             errors.push("No team are setting in current context. Use config --team option.")

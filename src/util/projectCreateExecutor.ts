@@ -92,33 +92,44 @@ export class CreateProjectExecutor {
 
         this.vorpal.log("*** Get project informations from vulcain at " + this.options.server + "...");
 
-        var request = rest.post(this.options.server + "/api/v1/register")
+        var request = rest.post(this.options.server + "/api")
             .header('Accept', 'application/json')
             .header('Authorization', "ApiKey " + this.options.token)
             .type("json")
-            .send(this.requestData);
+            .timeout(5000)
+            .send({ action: "registerService", schema:"Service", data: this.requestData });
 
-        let response = await this.sendRequest(request);
-        if (response.ok) {
-            var info = response.body;
-            this.engine.updateMeta(info);
+        try {
+            let response = await this.sendRequest(request);
+            if (response.ok) {
+                var info = response.body;
+                if (info.status === "Error") {
+                    this.vorpal.log(info.error.message);
+                    return false;
+                }
+                info = info.value;
+                this.engine.updateMeta(info);
 
-            if(this.action !== Action.AddExistingProject)            
-                this.prepareFolder(info);
+                if (this.action !== Action.AddExistingProject)
+                    this.prepareFolder(info);
 
-            if (this.action === Action.Clone)
-                return await this.runClone(info);
-            else if (this.action === Action.AddExistingProject)
-                return await this.runAdd(info);
-            else
-                return await this.runCreate(info);
+                if (this.action === Action.Clone)
+                    return await this.runClone(info);
+                else if (this.action === Action.AddExistingProject)
+                    return await this.runAdd(info);
+                else
+                    return await this.runCreate(info);
+            }
+
+            this.vorpal.log("*** Error occured : " + (response.body && response.body.error || response.body || response.statusMessage || response.error));
+            if (response.body && response.body.errors) {
+                response.body.errors.forEach(err => {
+                    this.vorpal.log(err.message);
+                });
+            }
         }
-
-        this.vorpal.log("*** Error occured : " + (response.body && response.body.message || response.body || response.statusMessage || response.error));
-        if (response.body && response.body.errors) {
-            response.body.errors.forEach(err => {
-                this.vorpal.log(err.message);
-            });
+        catch (e) {
+            this.vorpal.log(e);
         }
         return false;
     }
@@ -244,21 +255,26 @@ export class CreateProjectExecutor {
             }
 
             this.vorpal.log("*** Registering project in vulcain...");
-            var request = rest.post(this.options.server + "/api/v1/register/commit")
+            var request = rest.post(this.options.server + "/api/Service/commitService")
                 .header('Accept', 'application/json')
                 .header('Authorization', "ApiKey " + this.options.token)
                 .type("json")
-                .send(this.requestData);
+                .send({ data: this.requestData });
 
             request.end(response => {
                 if (response.ok) {
+                    var info = response.body;
+                    if (info.status === "Error") {
+                        reject(info.error.message);
+                        return;
+                    }
                     this.vorpal.log("*** Project registered with success.")
                     this.doNotRemoveFolder = true;
                     resolve(true);
                     return;
                 }
 
-                reject(util.format("Unable to register project - %j", ((response.body && response.body.message) || response.body || response.statusMessage)));
+                reject(util.format("Unable to register project - %j", ((response.body && response.body.error) || response.body || response.error)));
             });
         });
 	}

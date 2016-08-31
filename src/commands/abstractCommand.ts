@@ -38,11 +38,31 @@ export abstract class AbstractCommand {
             q += sep + p + "=" + query[p];
             sep = "&";
         }
-        return rest.get(options.server + "/api/v1/" + paths.join("/") + q)
+        const url = options.server + "/api/" + paths.join("/") + q;
+        return rest.get(url)
             .header('Accept', 'application/json')
             .header('Authorization', "ApiKey " + options.token);
     }
     
+    protected serviceAutoCompletion(input, callback) {
+        let options = this.readOptions();
+        let request = this.createRequest(["Service"], { $query: JSON.stringify({ ownerTeam: options.team, name: { $startsWith: input } }) });
+        if (!request) return [];
+        request.end((response) => {
+            var templates = (response.ok && response.body && response.body.value) || [];
+            callback(templates.map(t => t.name));
+        });
+    }
+
+    protected templateAutoCompletion(input, callback) {
+        let request = this.createRequest(["Template", "getnames"], { startsWith: input });
+        if (!request) return [];
+        request.end((response) => {
+            var templates = (response.ok && response.body && response.body.value) || [];
+            callback(templates);
+        });
+    }    
+
     protected readOptions(profile?:string) {
 
         if (!AbstractCommand.config) {

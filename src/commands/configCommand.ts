@@ -24,15 +24,6 @@ export class ConfigCommand extends AbstractCommand
         console.log();
         this.exec({});
     }
-
-    private templateAutoCompletion(input, callback) {
-        let request = this.createRequest(["templates"], { startsWith: input });
-        if (!request) return [];
-        request.end((response) => {
-            var templates = (response.ok && response.body && response.body.data) || [];
-            callback(templates.map(t => t.name));
-        });
-    }
     
     private teamAutoCompletion(input, callback) {
         let request = this.createRequest(["teams"], { startsWith: input });

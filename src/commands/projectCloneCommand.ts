@@ -20,16 +20,6 @@ export class ProjectCloneCommand extends AbstractCommand {
                 self.exec(this, args, cb);
             });
     }
-
-    private serviceAutoCompletion(input, callback) {
-        let options = this.readOptions();
-        let request = this.createRequest(["services"], { team: options.team, startsWith: input });
-        if (!request) return [];
-        request.end((response) => {
-            var templates = (response.ok && response.body && response.body.data) || [];
-            callback(templates.map(t => t.name));
-        });
-    }
     
     protected checkArguments(args, errors) {
         if (!args.team) {

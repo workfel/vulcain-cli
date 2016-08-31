@@ -8,7 +8,7 @@
 			"preLaunchTask": "compile-ts",
 			"program": "${workspaceRoot}/src/index.ts",
 			"stopOnEntry": false,
-			"args": ["project", "test", "test-oauth", "-t", "NodeEmptyApplication"],
+			"args": [],
 			"cwd": "${workspaceRoot}",
 			"runtimeExecutable": null,
 			"runtimeArgs": [
