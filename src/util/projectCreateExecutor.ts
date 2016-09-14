@@ -22,6 +22,7 @@ var rest = require('unirest')
 var git = require('gift')
 var util = require('util');
 var Promise = require('promise');
+var copy = require('copy-paste');
 
 export enum Action {
     AddExistingProject = 1,
@@ -150,6 +151,8 @@ export class CreateProjectExecutor {
                 this.vorpal.log("*** Error when running scripts : " + err);
             }
             this.vorpal.log("Project cloned in " + this.engine.meta.baseDir);
+            copy.copy(this.engine.meta.baseDir);
+            this.vorpal.log("Copy project folder in clipboard.")
             return true;
         }
         catch (e) {
@@ -203,6 +206,8 @@ export class CreateProjectExecutor {
                 }
             }
             this.vorpal.log("Project created in " + this.engine.meta.baseDir);
+            copy.copy(this.engine.meta.baseDir);
+            this.vorpal.log("Copy project folder in clipboard.")
             this.engine.displayMessage("end");
             return true;
         }
@@ -409,6 +414,8 @@ export class CreateProjectExecutor {
             }
             this.engine.setBaseDir(local);
             this.vorpal.log("*** Cloning repository into " + local + "...");
+            copy.copy(local);
+            
             git.clone(
                 templateUrl,
                 local,
