@@ -46,7 +46,7 @@ export abstract class AbstractCommand {
     
     protected serviceAutoCompletion(input, callback) {
         let options = this.readOptions();
-        let request = this.createRequest(["Service"], { $query: JSON.stringify({ ownerTeam: options.team, name: { $startsWith: input } }) });
+        let request = this.createRequest(["Service.all"], { $query: JSON.stringify({ ownerTeam: options.team, name: { $startsWith: input } }) });
         if (!request) return [];
         request.end((response) => {
             var templates = (response.ok && response.body && response.body.value) || [];
@@ -55,7 +55,7 @@ export abstract class AbstractCommand {
     }
 
     protected templateAutoCompletion(input, callback) {
-        let request = this.createRequest(["Template", "getnames"], { startsWith: input });
+        let request = this.createRequest(["Template.getnames"], { startsWith: input });
         if (!request) return [];
         request.end((response) => {
             var templates = (response.ok && response.body && response.body.value) || [];
@@ -63,6 +63,15 @@ export abstract class AbstractCommand {
         });
     }    
 
+    protected teamAutoCompletion(input, callback) {
+        let request = this.createRequest(["Team.all"], { startsWith: input });
+        if (!request) return [];
+        request.end((response) => {
+            var templates = (response.ok && response.body && response.body.data) || [];
+            callback(templates.map(t => t.name));
+        });
+    }   
+    
     protected readOptions(profile?:string) {
 
         if (!AbstractCommand.config) {

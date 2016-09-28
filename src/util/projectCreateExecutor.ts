@@ -260,7 +260,7 @@ export class CreateProjectExecutor {
             }
 
             this.vorpal.log("*** Registering project in vulcain...");
-            var request = rest.post(this.options.server + "/api/Service/commitService")
+            var request = rest.post(this.options.server + "/api/Service.commitService")
                 .header('Accept', 'application/json')
                 .header('Authorization', "ApiKey " + this.options.token)
                 .type("json")

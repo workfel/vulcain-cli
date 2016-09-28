@@ -20,15 +20,6 @@ export class InitCommand extends AbstractCommand
             });
     }
 
-    private teamAutoCompletion(input, callback) {
-        let request = this.createRequest(["teams"], { startsWith: input });
-        if (!request) return [];
-        request.end((response) => {
-            var templates = (response.ok && response.body && response.body.data) || [];
-            callback(templates.map(t => t.name));
-        });
-    }   
-
     protected checkArguments(args, errors) {
         if (!args.team) {
             errors.push("No team are setting in current context. Use config --team option.")
@@ -42,7 +33,7 @@ export class InitCommand extends AbstractCommand
                 vorpal.log("Get initialization script from " + options.server);
                 vorpal.log("");
 
-                let request = this.createRequest(["teams", options.team, "context"], {});
+                let request = this.createRequest(["Team.get", options.team, "context"], {});
                 request.end( async (response) => {
                     if (response.ok) {
                         let manifest = response.body;
