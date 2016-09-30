@@ -46,7 +46,7 @@ export abstract class AbstractCommand {
     
     protected serviceAutoCompletion(input, callback) {
         let options = this.readOptions();
-        let request = this.createRequest(["Service.all"], { $query: JSON.stringify({ ownerTeam: options.team, name: { $startsWith: input } }) });
+        let request = this.createRequest(["Service.all"], { team: options.team, name: input });
         if (!request) return [];
         request.end((response) => {
             var templates = (response.ok && response.body && response.body.value) || [];

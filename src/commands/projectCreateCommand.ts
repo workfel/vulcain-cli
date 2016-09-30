@@ -16,6 +16,7 @@ export class ProjectCreateCommand extends AbstractCommand {
                     return "Invalid character for project name. Use only lowercase, number, '.' or '-'"
             })
             .option("--desc <description>", "Project description")
+            .option("--team <team>", "Team name", this.teamAutoCompletion.bind(this))            
             .option("--folder, -f <folder>", "Project folder", this.fileAutoComplete)
             .option("-p, --package", "Create as a package (library)")
             .option("-t, --template <template>", "Template name used to initialize project", this.templateAutoCompletion.bind(this))
@@ -26,7 +27,7 @@ export class ProjectCreateCommand extends AbstractCommand {
 
     protected checkArguments(args, errors) {
         if (!args.team) {
-            errors.push("No team are setting in current context. Use config --team option.")
+            errors.push("No team are setting in current context.")
         }
         if (!args.template) {
             errors.push("You must provide a template. Use --template (or -t) option.")

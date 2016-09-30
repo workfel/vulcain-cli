@@ -18,6 +18,7 @@ export class ProjectAddCommand extends AbstractCommand {
             })
             .option("--desc <description>", "Project description")
             .option("-p, --package", "Create as a package (library)")
+            .option("--team <team>", "Team name", this.teamAutoCompletion.bind(this))
             .option("--folder, -f <folder>", "Project folder", this.fileAutoComplete)
             .option("-t, --template <template>", "Template name used to initialize project", this.templateAutoCompletion.bind(this))
             .action(function (args, cb) {
@@ -27,7 +28,7 @@ export class ProjectAddCommand extends AbstractCommand {
     
     protected checkArguments(args, errors) {
         if (!args.team) {
-            errors.push("No team are setting in current context. Use config --team option.")
+            errors.push("No team are setting in current context.")
         }
     }
 

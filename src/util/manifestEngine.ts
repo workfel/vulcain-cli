@@ -34,6 +34,8 @@ export class Engine {
     }
 
     updateMeta(info) {
+        if( info.name.startsWith(info.ns))
+            info.name = info.name.substr(info.ns.length+1);
         this.meta.teamName = info.team;
         this.meta.project.namespace = info.ns;
         this.meta.project.safeName = info.safeName;

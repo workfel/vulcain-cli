@@ -16,6 +16,7 @@ export class ProjectCloneCommand extends AbstractCommand {
                     return "Invalid character for project name. Use only lowercase, number, '.' or '-'"
             })
             .option("--folder, -f <folder>", "Project folder", this.fileAutoComplete)
+            .option("--team <team>", "Team name", this.teamAutoCompletion.bind(this))            
             .action(function (args, cb) {
                 self.exec(this, args, cb);
             });
@@ -23,7 +24,7 @@ export class ProjectCloneCommand extends AbstractCommand {
     
     protected checkArguments(args, errors) {
         if (!args.team) {
-            errors.push("No team are setting in current context. Use config --team option.")
+            errors.push("No team are setting in current context.")
         }
     }
 
