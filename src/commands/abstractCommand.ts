@@ -29,8 +29,11 @@ export abstract class AbstractCommand {
 
     protected createRequest(paths: Array<string>, query) {
         var options = this.readOptions();
-        if (!options.server || !options.token) return null;
-        
+        if (!options.server || !options.token) {
+            this.vorpal.log("You must define a server address and a token with the config command.")
+            return null;
+        }
+
         let q = "";
         let sep = "?";
         for (var p in query) {
@@ -135,8 +138,14 @@ export abstract class AbstractCommand {
             if( !/^https?/i.test(args.server))
                 args.server = "http://" + args.server;
         }
+        else {
+            errors.push("Server is not defined.");
+        }
         if (!args.token && config.token) {
             args.token = config.token;
+        }
+        else {
+            errors.push("Token is not defined.");
         }
         if (!args.team) {
             args.team = config.team;
