@@ -58,7 +58,7 @@ export abstract class AbstractCommand {
     }
 
     protected templateAutoCompletion(input, callback) {
-        let request = this.createRequest(["Template.getnames"], { startsWith: input });
+        let request = this.createRequest(["Template.getnames"], { startsWith: input, kind: "Project" });
         if (!request) return [];
         request.end((response) => {
             var templates = (response.ok && response.body && response.body.value) || [];
