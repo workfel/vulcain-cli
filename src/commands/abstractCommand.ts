@@ -70,7 +70,7 @@ export abstract class AbstractCommand {
         let request = this.createRequest(["Team.all"], { startsWith: input });
         if (!request) return [];
         request.end((response) => {
-            var templates = (response.ok && response.body && response.body.data) || [];
+            var templates = (response.ok && response.body && response.body.value) || [];
             callback(templates.map(t => t.name));
         });
     }   

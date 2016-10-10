@@ -13,7 +13,7 @@ export class ProjectAddCommand extends AbstractCommand {
         let self = this;
         vorpal.command('add <name>', desc)
             .validate(args => {
-                if (!/^(([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])\\.)*([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])$/.test(args.name))
+                if (!/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/.test(args.name))
                     return "Invalid character for project name. Use only lowercase, number, '.' or '-'"
             })
             .option("--desc <description>", "Project description")

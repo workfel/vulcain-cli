@@ -12,7 +12,7 @@ export class ProjectTestCommand extends AbstractCommand {
         let self = this;
         vorpal.command('test <name>', desc)
             .validate(args => {
-                if (!/^(([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])\\.)*([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])$/.test(args.name))
+                if (!/^(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)*([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])$/.test(args.name))
                     return "Invalid character for project name. Use only lowercase, number, '.' or '-'"
             })
             .option("-t, --template <template>", "Template name used to initialize project", this.templateAutoCompletion.bind(this))
