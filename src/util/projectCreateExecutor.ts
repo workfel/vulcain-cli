@@ -17,11 +17,11 @@ import * as fs from 'fs'
 import * as Path from 'path'
 import * as URL from 'url'
 import {Engine} from '../util/manifestEngine'
+import { AbstractCommand } from '../commands/abstractCommand';
 var exec = require('child_process').exec;
 var rest = require('unirest')
 var git = require('gift')
 var util = require('util');
-var Promise = require('promise');
 var copy = require('copy-paste');
 
 export enum Action {
@@ -101,7 +101,7 @@ export class CreateProjectExecutor {
             .send({ action: "registerService", schema:"Service", data: this.requestData });
 
         try {
-            let response = await this.sendRequest(request);
+            let response:any = await this.sendRequest(request);
             if (response.ok) {
                 var info = response.body;
                 if (info.status === "Error") {
@@ -122,7 +122,7 @@ export class CreateProjectExecutor {
                     return await this.runCreate(info);
             }
 
-            this.vorpal.log("*** Error occured : " + (response.body && response.body.error || response.body || response.statusMessage || response.error));
+            this.vorpal.log("*** Error occured : " + ((response.body && response.body.error) || response.body || response.statusMessage || response.error));
             if (response.body && response.body.errors) {
                 response.body.errors.forEach(err => {
                     this.vorpal.log(err.message);
@@ -141,6 +141,7 @@ export class CreateProjectExecutor {
             var url = URL.parse(info.projectUrl);
             if(this.options.userName && this.options.password)
                 url.auth = this.options.userName + ":" + this.options.password;
+            
             await this.clone(URL.format(url), this.options.folder)
 
             try {
@@ -186,7 +187,7 @@ export class CreateProjectExecutor {
             if (this.action !== Action.DontRegister) {
                 dir = await this.createNewGitRepository(dir);
                 await this.registerService(dir, info);
-                await this.gitCommit(info.projectUrl);
+                await this.gitCommit(info.projectUrl, info.branch);
             }
             else {
                 try {
@@ -349,7 +350,7 @@ export class CreateProjectExecutor {
         });
     }
     
-    private gitCommit( newRepositoryUrl:string )
+    private gitCommit( newRepositoryUrl:string, branch: string )
     {
         return new Promise(async (resolve, reject) => {
             let local = this.engine.meta.baseDir;
@@ -386,8 +387,17 @@ export class CreateProjectExecutor {
                             reject(err);
                             return;
                         }
+                        if (branch === "master") {
+                            resolve(local);
+                            return;
+                        }
 
-                        resolve(local);
+                        repo.checkout(branch, { b: true }, err => {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve(local);
+                        });    
                     });
                 });
             });
