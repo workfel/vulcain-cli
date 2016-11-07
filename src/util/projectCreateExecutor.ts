@@ -98,7 +98,7 @@ export class CreateProjectExecutor {
             .header('Authorization', "ApiKey " + this.options.token)
             .type("json")
             .timeout(5000)
-            .send({ action: "registerService", schema:"Service", data: this.requestData });
+            .send({ action: "registerService", schema:"Service", params: this.requestData });
 
         try {
             let response:any = await this.sendRequest(request);
@@ -265,7 +265,7 @@ export class CreateProjectExecutor {
                 .header('Accept', 'application/json')
                 .header('Authorization', "ApiKey " + this.options.token)
                 .type("json")
-                .send({ data: this.requestData });
+                .send({ params: this.requestData });
 
             request.end(response => {
                 if (response.ok) {

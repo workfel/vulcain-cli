@@ -26,7 +26,7 @@ vorpal
     .delimiter("vulcain > ");
 
 console.log()
-console.log("Vulcain command - Version: 1.0.33");
+console.log("Vulcain command - Version: 1.0.34");
 console.log("=================================")
 console.log();
 console.log("Commands : ");
