@@ -67,11 +67,11 @@ export abstract class AbstractCommand {
     }    
 
     protected teamAutoCompletion(input, callback) {
-        let request = this.createRequest(["Team.all"], { startsWith: input });
+        let request = this.createRequest(["Team.names"], { startsWith: input });
         if (!request) return [];
         request.end((response) => {
-            var templates = (response.ok && response.body && response.body.value) || [];
-            callback(templates.map(t => t.name));
+            var teams = (response.ok && response.body && response.body.value) || [];
+            callback(teams);
         });
     }   
     
